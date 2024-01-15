@@ -1,0 +1,65 @@
+- name: Ensure group "ansible" group exists
+  ansible.builtin.group:
+    name: ansible
+    state: present
+
+- name: Add the ansible user
+  ansible.builtin.user:
+    name: "{{ bootstrap_ansible_ansible_user }}"
+    shell: /bin/bash
+    group: ansible
+    create_home: true
+    comment: ansible user
+
+- name: Know if the sudoers file exists
+  ansible.builtin.stat:
+    path: /etc/sudoers.d/{{ bootstrap_ansible_ansible_user }}
+  register: sudoers_file_exists
+
+- name: Add sudoers file
+  ansible.builtin.file:
+    path: /etc/sudoers.d/{{ bootstrap_ansible_ansible_user }}
+    state: touch
+    mode: "0440"
+    owner: root
+    group: root
+  changed_when: sudoers_file_exists.stat.exists is defined and sudoers_file_exists.stat.exists == false
+
+- name: Edit sudoers file
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/{{ bootstrap_ansible_ansible_user }}
+    line: "{{ bootstrap_ansible_ansible_user }} ALL=(ALL) NOPASSWD:ALL"
+    validate: "visudo -cf %s"
+    state: present
+
+- name: Create ssh folder
+  ansible.builtin.file:
+    path: "/home/{{ bootstrap_ansible_ansible_user }}/.ssh"
+    state: directory
+    owner: "{{ bootstrap_ansible_ansible_user}}"
+    group: "{{ bootstrap_ansible_ansible_user}}"
+    mode: "0700"
+
+- name: Copy ssh key
+  ansible.builtin.copy:
+    src: "{{ bootstrap_ansible_ssh_file_path }}"
+    dest: /home/ansible/.ssh/authorized_keys
+    owner: "{{ bootstrap_ansible_ansible_user }}"
+    group: "{{ bootstrap_ansible_ansible_user }}"
+    mode: "0600"
+
+- name: Edit /etc/ssh/sshd_config
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "PasswordAuthentication no"
+    state: present
+  notify:
+    - Restart_sshd
+
+- name: Edit /etc/ssh/sshd_config
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "PermitRootLogin no"
+    state: present
+  notify:
+    - Restart_sshd

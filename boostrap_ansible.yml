@@ -1,0 +1,13 @@
+- name: Install ansible
+  hosts: all
+  remote_user: kirby
+  become: true
+  roles:
+    - update
+  tasks:
+    - name: Import install_ansible role
+      tags: booststrap_ansible
+      vars:
+        bootstrap_ansible_ansible_user: ansible
+      ansible.builtin.include_role:
+        name: bootstrap_ansible

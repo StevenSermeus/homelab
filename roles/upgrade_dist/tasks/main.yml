@@ -1,0 +1,16 @@
+- name: Update upgrade dist
+  become: true
+  tags:
+    - debian
+  when: ansible_os_family == "Debian"
+  block:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+      tags: update
+    - name: Upgrade all packages
+      ansible.builtin.apt:
+        upgrade: dist
+        autoremove: true
+        autoclean: true
+      tags: upgrade

@@ -1,0 +1,42 @@
+all:
+  rasberrypi:
+    ansible_host: 192.168.0.10
+  rem:
+    ansible_host: 192.168.0.11
+  ram:
+    ansible_host: 192.168.0.12
+  3match-1:
+    ansible_host: 0.0.0.0
+  3match-2:
+    ansible_host: 0.0.0.0
+  web:
+    ansible_host: 0.0.0.0
+  node1:
+    ansible_host: 0.0.0.0
+  node2:
+    ansible_host: 0.0.0.0
+  node3:
+    ansible_host: 0.0.0.0
+
+kubernetes:
+  hosts:
+    node1:
+    node2:
+    node3:
+
+proxmox:
+  hosts:
+    rem:
+    ram:
+
+docker:
+  hosts:
+    rasberrypi:
+    web:
+    3match-1:
+    3match-2:
+
+minecraft:
+  hosts:
+    3match-1:
+    3match-2:
