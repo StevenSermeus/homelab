@@ -1,6 +1,7 @@
 - name: Install runner
-  hosts: gitlab-runner
+  hosts: gitlab-runners
   become: true
+  tags: Install
   tasks:
     - name: Start gitlab runner docker
       community.docker.docker_container:
@@ -10,32 +11,30 @@
         volumes:
           - /var/run/docker.sock:/var/run/docker.sock
           - /srv/gitlab-runner/config:/etc/gitlab-runner
-        env:
-          CI_SERVER_URL: "https://gitlab.com/"
-          RUNNER_EXECUTOR: "docker"
-          DOCKER_IMAGE: "alpine:latest"
-          DOCKER_VOLUMES: "/var/run/docker.sock:/var/run/docker.sock"
 
-- name: Register gitlab runner
-  hosts: gitlab-runner-1
+- name: Register runner
+  hosts: gitlab-runner-4
   tags: Register
+  become: true
   vars:
-    gitlab_runner_token: "token"
-  community.docker.docker_container_exec:
-    container: gitlab-runner
-    command: >
-      gitlab-runner register --non-interactive
-      --url https://gitlab.com/
-      --registration-token {{ gitlab_runner_token }}
-      --executor docker
-      --docker-image alpine:latest
-      --description "docker-runner"
-      --tag-list "docker,aws"
-      --run-untagged
-      --locked=false
-      --access-level=not_protected
-  register: result
-- name: Show result
-  tags: Register
-  ansible.builtin.debug:
-    var: result
+    gitlab_runner_token: "glrt-US9tEsmkyxVanrc9BaRK"
+  tasks:
+    - name: Register runner
+      community.docker.docker_container_exec:
+        container: gitlab-runner
+        command: >
+          gitlab-runner register --non-interactive
+          --url https://gitlab.com/
+          --registration-token {{ gitlab_runner_token }}
+          --executor docker
+          --docker-image alpine:latest
+          --description {{ inventory_hostname }} 
+          --tag-list "docker,ansible"
+          --run-untagged
+          --locked=false
+          --access-level=not_protected
+      register: result
+    - name: Show result
+      tags: Register
+      ansible.builtin.debug:
+        var: result

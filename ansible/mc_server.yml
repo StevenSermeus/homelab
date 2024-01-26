@@ -16,6 +16,7 @@
     force_gamemode: true
     spawn_protection: 0
     difficulty: "normal"
+    exposed_port: 25565
     # folder: ./minecraft
   tasks:
     - name: Setup docker
@@ -38,7 +39,7 @@
         image: itzg/minecraft-server
         restart_policy: always
         published_ports:
-          - 25565:25565
+          - "{{ exposed_port }}:25565"
         env:
           TYPE: "{{ type }}"
           EULA: "{{ eula }}"

@@ -10,8 +10,7 @@
       tags: update
     - name: Upgrade all packages
       ansible.builtin.apt:
-        upgrade: "*"
-        state: latest
+        upgrade: "full"
         autoremove: true
         autoclean: true
       tags: upgrade

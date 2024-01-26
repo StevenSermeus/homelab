@@ -66,9 +66,12 @@
       when: bootstrap_ansible_user != "root"
 
     - name: Get back ssh key
+      # the key of the host
       ansible.builtin.fetch:
         src: "/home/{{ bootstrap_ansible_user }}/.ssh/id_rsa"
-        dest: "~/.ssh/{{ ansible_nodename }}"
+        dest: "~/.ssh/{{ inventory_hostname }}.id_rsa"
+        flat: true
+        mode: "0600"
       when: bootstrap_ansible_user != "root"
 
     - name: Edit sshd config

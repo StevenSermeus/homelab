@@ -4,8 +4,9 @@
   tags:
     - update-package
   tasks:
-    ansible.builtin.include_role:
-      name: update_package
+    - name: Update package
+      ansible.builtin.include_role:
+        name: upgrade_package
 
 - name: Update dist
   hosts: all
@@ -13,5 +14,6 @@
   tags:
     - update-dist
   tasks:
-    ansible.builtin.include_role:
-      name: update_dist
+    - name: Update dist
+      ansible.builtin.include_role:
+        name: upgrade_dist

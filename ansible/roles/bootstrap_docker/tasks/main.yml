@@ -34,6 +34,18 @@
 - name: Install package for ansible docker
   tags: post_install_docker
   block:
+    - name: Instal pip3 for debian
+      ansible.builtin.package:
+        name: "python3-pip"
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install pip for Archlinux
+      ansible.builtin.package:
+        name: "python-pip"
+        state: present
+      when: ansible_os_family == "Archlinux"
+
     - name: Install python docker for Archlinux
       ansible.builtin.package:
         name: "python-docker"
@@ -42,7 +54,7 @@
 
     - name: Install python docker for Debian
       ansible.builtin.pip:
-        name: "{{ glances_install_pip_packages[ansible_os_family] }}"
+        name: "python-docker"
         state: present
         extra_args: "--user --break-system-packages"
       when: ansible_os_family == "Debian"
