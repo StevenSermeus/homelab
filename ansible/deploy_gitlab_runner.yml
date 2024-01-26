@@ -32,7 +32,9 @@
           --locked=false
           --access-level=not_protected
       register: result
+      when: gitlab_runner_token is defined
     - name: Show result
       tags: Register
       ansible.builtin.debug:
         var: result
+      when: gitlab_runner_token is defined
