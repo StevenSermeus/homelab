@@ -1,0 +1,19 @@
+- name: Boostrap host
+  hosts: all
+  remote_user: kirby
+  become: true
+  tags: bootstrap
+  tasks:
+    - name: Include Boostrap ansible
+      ansible.builtin.include_role:
+        name: bootstrap_ansible
+
+- name: Boostrap docker host
+  hosts: docker
+  remote_user: kirby
+  become: true
+  tags: bootstrap
+  tasks:
+    - name: Include Boostrap docker
+      ansible.builtin.include_role:
+        name: bootstrap_docker

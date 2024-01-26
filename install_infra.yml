@@ -1,8 +1,0 @@
-- name: Get ghost docker compose
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/TryGhost/Ghost/master/docker-compose.yml
-    dest: /home/ansible/ghost/docker-compose.yml
-    mode: "0644"
-    owner: ansible
-    group: ansible
-    validate_certs: no

@@ -1,0 +1,25 @@
+- name: Update cache
+  become: true
+  ansible.builtin.package:
+    update_cache: true
+
+- name: Update cache Debian
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+- name: Start docker
+  become: true
+  ansible.builtin.service:
+    name: "{{ bootstrap_docker_service[ansible_os_family] }}"
+    state: started
+  when: bootstrap_docker_service[ansible_os_family] is defined
+
+- name: Enable docker
+  become: true
+  ansible.builtin.service:
+    name: "{{ bootstrap_docker_service[ansible_os_family] }}"
+    enabled: true
+    state: started
+  when: bootstrap_docker_service[ansible_os_family] is defined

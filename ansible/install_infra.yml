@@ -1,0 +1,51 @@
+# The proxmox should be in cluster mode and have template for debian 12
+- name: Boostrap Ansible proxmox
+  hosts: proxmox
+  remote_user: root
+  roles:
+    - boostrap_ansible
+
+- name: Provision Proxmox
+  hosts: proxmox
+  roles:
+    - provision_proxmox
+
+- name: Boostrap ansible all
+  hosts: all_except_proxmox
+  roles:
+    - boostrap_ansible
+
+- name: Install Docker
+  hosts: docker
+  roles:
+    - update_dist
+    - boostrap_docker
+
+- name: Install Monitoring
+  hosts: monitoring
+  roles:
+    - install_uptime_kuma
+    - install_ntfy
+    - install_grafana
+
+- name: Install remote access
+  hosts: vpn
+  roles:
+    - install_vpn
+
+- name: Install webserver
+  hosts: web_servers
+  roles:
+    - install_nginx_reverse_proxy_manager
+
+- name: Install security
+  hosts: security_servers
+  roles:
+    - install_clamav
+    - install_open_vas
+
+- name: Install security client
+  hosts: security_clients
+  roles:
+    - install_clamav_client
+    - install_open_vas_client

@@ -1,3 +1,0 @@
-bootstrap_ansible_ssh_file_path: ~/.ssh/ansible
-
-bootstrap_ansible_ansible_user: ansible

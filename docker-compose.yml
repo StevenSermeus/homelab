@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  ansible:
+    container_name: ansible
+    build:
+      context: .
+      dockerfile: tools/ansible.dockerfile
+    volumes:
+      - ./ansible:/ansible
+      - ~/.ssh:/root/.ssh # mount ssh keys for ansible
+  kubectl:
+    container_name: kubectl
+    build:
+      context: .
+      dockerfile: tools/kubectl.dockerfile
+    volumes:
+      - ./kubernetes:/kubernetes
+      - ~/.kube:/root/.kube # mount kube config
+  terraform:
+    container_name: terraform
+    build:
+      context: .
+      dockerfile: tools/terraform.dockerfile
+    volumes:
+      - ./terraform:/terraform
+      - ~/.ssh:/root/.ssh # mount ssh keys for terraform

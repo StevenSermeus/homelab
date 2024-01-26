@@ -1,0 +1,42 @@
+bootstrap_docker_conflict_package:
+  Debian:
+    - docker.io
+    - docker-doc
+    - docker-compose
+    - podman-docker
+    - containerd
+    - runc
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+    - docker-compose-plugin
+    - docker-ce-rootless-extras
+
+bootstrap_docker_docker_relicate_path:
+  Debian:
+    - /var/lib/docker/
+    - /var/lib/containerd
+
+bootstrap_docker_preparation_packages:
+  Debian:
+    - ca-certificates
+    - curl
+    - gnupg
+
+bootstrap_docker_gpg_key_url:
+  Debian: https://download.docker.com/linux/debian/gpg
+
+bootstrap_docker_repository:
+  RedHat: https://download.docker.com/linux/fedora/docker-ce.repo
+
+bootstrap_docker_packages:
+  Archlinux:
+    - docker
+  Debian:
+    - docker-ce
+    - docker-ce-cli
+    - containerd.io
+
+bootstrap_docker_service:
+  Archlinux: docker
+  Debian: docker

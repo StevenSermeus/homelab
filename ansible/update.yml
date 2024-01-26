@@ -1,0 +1,17 @@
+- name: Update package on all host
+  hosts: all
+  become: true
+  tags:
+    - update-package
+  tasks:
+    ansible.builtin.include_role:
+      name: update_package
+
+- name: Update dist
+  hosts: all
+  become: true
+  tags:
+    - update-dist
+  tasks:
+    ansible.builtin.include_role:
+      name: update_dist

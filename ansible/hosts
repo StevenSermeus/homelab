@@ -1,0 +1,30 @@
+all:
+  hosts:
+    gitlab-runner-1:
+      ansible_host: 192.168.0.0
+    gitlab-runner-2:
+      ansible_host: 192.168.0.0
+    gitlab-runner-3:
+      ansible_host: 192.168.0.0
+    minecraft-1:
+      ansible_host: 192.168.0.0
+    pi:
+      ansible_host: 192.168.0.0
+    pihole-backup:
+      ansible_host: 192.168.0.0
+    proxmox-1:
+      ansible_host:
+    proxmox-2:
+      ansible_host:
+
+gitlab-runners:
+  hosts:
+    gitlab-runner-1:
+    gitlab-runner-2:
+    gitlab-runner-3:
+
+proxmox:
+  # sudo must be installed on the proxmox hosts
+  hosts:
+    proxmox-1:
+    proxmox-2:

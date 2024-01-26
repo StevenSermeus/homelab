@@ -1,0 +1,91 @@
+- name: Linux boostrap
+  become: true
+  tags:
+    - boostrap_linux
+  block:
+    - name: Create sudo group
+      ansible.builtin.group:
+        name: sudo
+        state: present
+    - name: Create ansible user
+      ansible.builtin.user:
+        name: "{{ bootstrap_ansible_user }}"
+        shell: /bin/bash
+        createhome: true
+        groups: sudo
+        append: true
+        state: present
+      when: bootstrap_ansible_user != "root"
+
+    - name: Add ansible user to sudoers
+      ansible.builtin.copy:
+        dest: "/etc/sudoers.d/{{ bootstrap_ansible_user }}"
+        content: "{{ bootstrap_ansible_user }} ALL=(ALL) NOPASSWD:ALL"
+        owner: root
+        group: root
+        mode: "0440"
+      when: ansible_user != "root"
+
+    - name: Create .ssh directory
+      ansible.builtin.file:
+        path: "/home/{{ bootstrap_ansible_user }}/.ssh"
+        owner: "{{ bootstrap_ansible_user }}"
+        group: "{{ bootstrap_ansible_user }}"
+        mode: "0700"
+        state: directory
+      when: bootstrap_ansible_user != "root"
+    # need to install ansible-galaxy collection install community.crypto
+    - name: Generate ssh key
+      community.crypto.openssh_keypair:
+        path: "/home/{{ bootstrap_ansible_user }}/.ssh/id_rsa"
+        owner: "{{ bootstrap_ansible_user }}"
+        group: "{{ bootstrap_ansible_user }}"
+        size: 4096
+        type: rsa
+        state: present
+      when: bootstrap_ansible_user != "root"
+
+    - name: Touch authorized_keys
+      ansible.builtin.file:
+        path: "/home/{{ bootstrap_ansible_user }}/.ssh/authorized_keys"
+        owner: "{{ bootstrap_ansible_user }}"
+        group: "{{ bootstrap_ansible_user }}"
+        mode: "0600"
+        state: touch
+
+      when: bootstrap_ansible_user != "root"
+
+    - name: Add ssh key to authorized_keys
+      ansible.builtin.copy:
+        src: "/home/{{ bootstrap_ansible_user }}/.ssh/id_rsa.pub"
+        dest: "/home/{{ bootstrap_ansible_user }}/.ssh/authorized_keys"
+        remote_src: true
+        owner: "{{ bootstrap_ansible_user }}"
+        group: "{{ bootstrap_ansible_user }}"
+        mode: "0600"
+      when: bootstrap_ansible_user != "root"
+
+    - name: Get back ssh key
+      ansible.builtin.fetch:
+        src: "/home/{{ bootstrap_ansible_user }}/.ssh/id_rsa"
+        dest: "~/.ssh/{{ ansible_nodename }}"
+      when: bootstrap_ansible_user != "root"
+
+    - name: Edit sshd config
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        state: "{{ item.state }}"
+      loop:
+        - regexp: "^#?PasswordAuthentication"
+          line: "PasswordAuthentication no"
+          state: present
+        - regexp: "^#?PermitRootLogin"
+          line: "PermitRootLogin no"
+          state: present
+        - regexp: "^#?PubkeyAuthentication"
+          line: "PubkeyAuthentication yes"
+          state: present
+      notify:
+        - Restart sshd

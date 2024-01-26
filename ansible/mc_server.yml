@@ -1,0 +1,90 @@
+- name: Create minecraft server
+  hosts: minecraft
+  become: true
+  tags:
+    - create
+  vars:
+    type: "PAPER"
+    eula: "TRUE"
+    version: "1.20.1"
+    max_memory: 8G
+    enable_rcon: false
+    default_gamemode: "survival"
+    motd: "Message of the day"
+    ops: "ops"
+    max_players: 69
+    force_gamemode: true
+    spawn_protection: 0
+    difficulty: "normal"
+    # folder: ./minecraft
+  tasks:
+    - name: Setup docker
+      tags:
+        - docker-setup
+      ansible.builtin.include_role:
+        name: docker
+
+    - name: Copy minecraft folder
+      ansible.builtin.copy:
+        src: "{{ folder }}"
+        dest: /home/{{ ansible_user }}/minecraft
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: "0755"
+      when: folder is defined
+    - name: Deploy a minecraft server with docker
+      community.docker.docker_container:
+        name: minecraft
+        image: itzg/minecraft-server
+        restart_policy: always
+        published_ports:
+          - 25565:25565
+        env:
+          TYPE: "{{ type }}"
+          EULA: "{{ eula }}"
+          VERSION: "{{ version }}"
+          MAX_MEMORY: "{{ max_memory }}"
+          ENABLE_RCON: "{{ enable_rcon }}"
+          DEFAULT_GAMEMODE: "{{ default_gamemode }}"
+          MOTD: "{{ motd }}"
+          OPS: "{{ ops }}"
+          MAX_PLAYERS: "{{ max_players }}"
+          FORCE_GAMEMODE: "{{ force_gamemode }}"
+          SPAWN_PROTECTION: "{{ spawn_protection }}"
+          DIFFICULTY: "{{ difficulty }}"
+        volumes:
+          - /home/{{ ansible_user }}/minecraft:/data
+
+- name: Restart minecraft server
+  hosts: minecraft
+  become: true
+  tags:
+    - restart
+  tasks:
+    - name: Restart minecraft server
+      ansible.builtin.command:
+        cmd: docker restart minecraft
+
+- name: Fetch minecraft server logs
+  hosts: minecraft
+  become: true
+  tags:
+    - logs
+  tasks:
+    - name: Fetch minecraft server logs
+      ansible.builtin.fetch:
+        src: /home/{{ ansible_user }}/minecraft/logs/latest.log
+        dest: ./logs
+        flat: true
+
+- name: Fetch minecraft server files
+  hosts: minecraft
+  become: true
+  tags:
+    - fetch
+  tasks:
+    - name: Fetch minecraft server files
+      ansible.builtin.fetch:
+        src: /home/{{ ansible_user }}/minecraft
+        dest: ./minecraft
+        flat: true
