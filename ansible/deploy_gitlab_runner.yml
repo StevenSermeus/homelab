@@ -13,11 +13,9 @@
           - /srv/gitlab-runner/config:/etc/gitlab-runner
 
 - name: Register runner
-  hosts: gitlab-runner-4
+  hosts: gitlab-runners
   tags: Register
   become: true
-  vars:
-    gitlab_runner_token: "glrt-US9tEsmkyxVanrc9BaRK"
   tasks:
     - name: Register runner
       community.docker.docker_container_exec:
@@ -28,7 +26,7 @@
           --registration-token {{ gitlab_runner_token }}
           --executor docker
           --docker-image alpine:latest
-          --description {{ inventory_hostname }} 
+          --description {{ inventory_hostname }}
           --tag-list "docker,ansible"
           --run-untagged
           --locked=false
