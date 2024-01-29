@@ -1,5 +1,5 @@
 - name: Boostrap host
-  hosts: gitlab-runners
+  hosts: k8s
   remote_user: kirby
   become: true
   tags:
@@ -8,14 +8,3 @@
     - name: Include Boostrap ansible
       ansible.builtin.include_role:
         name: bootstrap_ansible
-
-- name: Boostrap docker host
-  hosts: gitlab-runners
-  gather_facts: true
-  become: true
-  tags:
-    - docker-bootstrap
-  tasks:
-    - name: Include Boostrap docker
-      ansible.builtin.include_role:
-        name: bootstrap_docker

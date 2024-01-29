@@ -63,8 +63,13 @@
     - restart
   tasks:
     - name: Restart minecraft server
-      ansible.builtin.command:
-        cmd: docker restart minecraft
+      community.docker.docker_container:
+        name: minecraft
+        state: stopped
+    - name: Restart minecraft server
+      community.docker.docker_container:
+        name: minecraft
+        state: started
 
 - name: Fetch minecraft server logs
   hosts: minecraft

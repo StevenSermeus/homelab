@@ -1,3 +1,11 @@
+- name: Boostrap docker
+  hosts: gitlab-runners
+  tasks:
+    - name: Include bootstrap docker
+      ansible.builtin.include_role:
+        name: bootstrap_docker
+      tags: bootstrap-docker
+
 - name: Install runner
   hosts: gitlab-runners
   become: true

@@ -1,0 +1,30 @@
+- name: Boostrap host
+  hosts: k8s
+  become: true
+  tags:
+    - docker-boostrap
+  tasks:
+    - name: Include Boostrap docker
+      ansible.builtin.include_role:
+        name: bootstrap_docker
+
+- name: Install k3s master
+  hosts: k8s
+  become: true
+  tags:
+    - k3s master
+  tasks:
+    - name: Include k3s master
+      ansible.builtin.shell:
+        cmd: curl -sfL https://get.k3s.io | sh -s - --docker
+      register: k3s_install
+      when: is_master is defined and is_master
+    - name: Get token and register it
+      ansible.builtin.shell:
+        cmd: cat /var/lib/rancher/k3s/server/node-token
+      register: k3s_token
+      when: is_master is defined and is_master
+    - name: Install k3s agent curl -sfL https://get.k3s.io | K3S_URL=https://myserver:6443 K3S_TOKEN=mynodetoken sh -
+      ansible.builtin.shell:
+        cmd: curl -sfL https://get.k3s.io | K3S_URL=https://{{ hostvars['k8s-1'].ansible_host }}:6443 K3S_TOKEN={{ hostvars['k8s-1'].k3s_token.stdout }} sh -s - --docker
+      when: is_master is not defined
